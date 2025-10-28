@@ -14,4 +14,3 @@ for index, value in enumerate(k.bible['books']):
                 print(verses['text'])
     index+=1
 
-oki = 10
