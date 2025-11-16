@@ -81,6 +81,10 @@ def ascii_box(lines, title=None, padding=1, align='left', max_width=None, border
 
     return result
 
+def choices():
+    print("Press Q to return to the previous Page |")
+    return input("Choose a number: ")
+
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -105,10 +109,10 @@ def main():
     while True:
 
 
-        choices = input("Choose a number1: ")
+        choice = input("Choose a number: ")
         clear()
         
-        match choices:
+        match choice:
             case '1':
                 books_menu(books_list)
 
@@ -118,8 +122,15 @@ def main():
             # case '':  
             #     print(ascii_box(["Search: "], title="Search", padding=2))
             #     break
+            
             case _:
-                print(ascii_box([f"Invalid choice: {choices}"], title="Error", padding=2))
+                clear()
+                print(ascii_box([f"Invalid Input"], title="Error", padding=2))
+                print("Press Q to return to the previous Page |")
+                input1 = choice.lower()
+                if input1 == 'q':
+                    clear()
+                    return main()
 
 def books_menu(books_list):
     """Display list of books and allow user to select one"""
@@ -158,22 +169,23 @@ def books_menu(books_list):
 
         print(ascii_box(menu_lines, title=f"Books (Page {page+1})", padding=2, align='left'))
 
-        choice = input("Choose a book (or press Enter to go back): ").strip()
+        choice = choices()
+        input1 = choice.lower()
         clear()
-
-        # Empty input -> go back to main menu
-        if choice == '':
-            main()
-            return
+        # ERROR HANDLING
+        # Empty input -> go back to main menu (return to caller)
+        if input1 == 'q':
+            clear()
+            return main()
 
         try:
             choice_num = int(choice)
         except ValueError:
-            print(ascii_box([f"Invalid choice: {choice}"], title="Error", padding=2))
+            print(ascii_box([f"Invalid Input"], title="Error", padding=2))
             continue
 
         if choice_num not in actions:
-            print(ascii_box([f"Invalid choice: {choice_num}"], title="Error", padding=2))
+            print(ascii_box([f"Invalid Input"], title="Error", padding=2))
             continue
 
         action, payload = actions[choice_num]
@@ -187,8 +199,8 @@ def books_menu(books_list):
         elif action == 'prev':
             page = max(0, page - 1)
             continue
-        elif action == 'back':
-            return
+        # elif action == 'back':
+        #     return
 
 def chapter_menu(book_name):
     """Display chapters from a selected book and load verses from JSON"""
@@ -242,21 +254,22 @@ def chapter_menu(book_name):
 
         print(ascii_box(menu_lines, title=f"{book_name} - Chapters (Page {page+1})", padding=2, align='left'))
 
-        chapter_choice = input("Choose a chapter (or press Enter to go back): ").strip()
+        choice = choices()
+        input1 = choice.lower()
         clear()
 
         # Empty input -> go back to books menu (return to caller)
-        if chapter_choice == '':
-            return
+        if input1 == 'q':
+            return 
 
         try:
-            choice_num = int(chapter_choice)
+            choice_num = int(choice)
         except ValueError:
-            print(ascii_box([f"Invalid choice: {chapter_choice}"], title="Error", padding=2))
+            print(ascii_box([f"Invalid Input"], title="Error", padding=2))
             continue
 
         if choice_num not in actions:
-            print(ascii_box([f"Invalid choice: {choice_num}"], title="Error", padding=2))
+            print(ascii_box([f"Invalid Input"], title="Error", padding=2))
             continue
 
         action, payload = actions[choice_num]
@@ -269,27 +282,63 @@ def chapter_menu(book_name):
         elif action == 'prev':
             page = max(0, page - 1)
             continue
-        elif action == 'back':
-            return
+        # elif action == 'back':
+        #     return
 
 
 def verse_menu(book_name, chapter_num, verses):
-    """Display a single verse from a selected chapter."""
+    """Display verses from a selected chapter with navigation."""
     verse_list = sorted(verses.keys(), key=lambda x: int(x))
     print(ascii_box([f"Available verses: {', '.join(verse_list)}"],
                     title=f"{book_name} Chapter {chapter_num}", padding=2, align='left'))
-
+    
+    # Get starting verse from user
     while True:
-        choice = input("Enter verse number to read: ")
-        if choice in verses:
-            clear()
-            print(ascii_box([verses[choice]],
-                            title=f"{book_name} Chapter {chapter_num} Verse {choice}", padding=2, align='left'))
-            input("Press Enter to continue to the next verse...")
-            clear()
+        choice = choices()
+        input1 = choice.lower()
+        if input1 in verse_list:
+            current_verse_idx = verse_list.index(choice)
             break
+        elif input1 == 'q':
+            clear()
+            return chapter_menu(book_name)
         else:
-            print("Invalid verse number. Try again.")
+            clear()
+            print(ascii_box([f"Invalid verse number: {choice}"], title="Error", padding=2))
+    
+    # Navigate through verses
+    while True:
+        current_verse = verse_list[current_verse_idx]
+        clear()
+        print(ascii_box([verses[current_verse]],
+                        title=f"{book_name} Chapter {chapter_num} Verse {current_verse}", padding=2, align='left'))
+        
+        # Show navigation instructions
+        nav_info = ["Press Enter for next verse", "Press Q to return to chapters"]
+        if current_verse_idx > 0:
+            nav_info.insert(0, "Press P for previous verse")
+        
+        nav_text = " | ".join(nav_info)
+        user_input = input(nav_text + "\n> ").strip().lower()
+        
+        if user_input == '' or user_input == 'enter':
+            # Move to next verse
+            if current_verse_idx < len(verse_list) - 1:
+                current_verse_idx += 1
+            else:
+                clear()
+                print(ascii_box(["No more verses in this chapter"], title="End of Chapter", padding=2))
+                input("Press Enter to return...")
+                clear()
+                return chapter_menu(book_name)
+        elif user_input == 'p':
+            # Move to previous verse
+            if current_verse_idx > 0:
+                current_verse_idx -= 1
+        elif user_input == 'q':
+            # Return to chapter selection
+            clear()
+            return chapter_menu(book_name)
 
 
 def verses_of_the_day():
