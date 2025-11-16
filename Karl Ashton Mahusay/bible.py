@@ -301,7 +301,8 @@ def verse_menu(book_name, chapter_num, verses):
             break
         elif input1 == 'q':
             clear()
-            return chapter_menu(book_name)
+            return 
+        # chapter_menu(book_name)
         else:
             clear()
             print(ascii_box([f"Invalid verse number: {choice}"], title="Error", padding=2))
