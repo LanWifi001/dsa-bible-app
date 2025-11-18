@@ -1,0 +1,17 @@
+[
+    {
+        "book": "Job",
+        "chapter": 1,
+        "verse": 2
+    },
+    {
+        "book": "Proverbs",
+        "chapter": 2,
+        "verse": 3
+    },
+    {
+        "book": "John",
+        "chapter": 3,
+        "verse": 4
+    }
+]
