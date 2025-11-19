@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime
 from utils import ascii_box, clear
+import color as c
 
 # History file name
 HISTORY_FILE = "bible_history.json"
@@ -85,10 +86,14 @@ def show_search_history():
     history = load_search_history()
     
     if not history:
-        print("\nNo search history found.")
+        print(c.CYAN)
+        print(ascii_box([f"Search History ({len(history)} entries)"], title = 'No search history found', padding=2, align='left'))
+        print(c.RESET)
         return
     
+    print(c.CYAN)
     print(ascii_box([f"Search History ({len(history)} entries)"], title = 'Word Search', padding=2, align='left'))
+    print(c.RESET)
     for i, entry in enumerate(history, 1):
         print(f"{i}. '{entry['word']}' - {entry['results']} results ({entry['timestamp']})")
 

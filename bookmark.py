@@ -309,14 +309,14 @@ def start_bm():
         '4. Clear Bookmars',
         '5. Back']
         print(c.CYAN)    
-        print(ascii_box(bm_menu, title="Mini Bible", padding=2, align='left'))
+        print(ascii_box(bm_menu, title="Bookmarks Menu", padding=2, align='left'))
         print(c.RESET)
         user = input('Your Input: ')
 
         while user.isdigit() == False:
             clear()
             print(c.CYAN)
-            print(ascii_box(bm_menu, title="Mini Bible", padding=2, align='left'))
+            print(ascii_box(bm_menu, title="Bookmarks Menu", padding=2, align='left'))
             print(c.RESET)    
             user = input('Invalid Input. Numbers only: ')
         
