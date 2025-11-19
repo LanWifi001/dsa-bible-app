@@ -23,6 +23,7 @@ def run_bookmark():
         
         # ensures that each bookmark doesn't repeat
         if user in bms:
+            clear()
             print('Bookmark already exists.')
             continue
         
@@ -269,7 +270,7 @@ def clear_bookmarks():
 
         with open('bookmark.json', 'w') as file:
             json.dump(bookmarks, file)
-
+        clear()
         print(ascii_box(['Bookmarks cleared, press enter to go back.'], title="Clear Bookmark", padding=2, align='left'))
         user = input()
         
@@ -319,3 +320,40 @@ def start_bm():
                 return
             case _:
                 print('Invalid Input.')
+
+def add_bookmark(idx1, idx2, idx3):
+    book = idx1
+    chapter = int(idx2)
+    verse = int(idx3)
+    arr = [book, chapter, verse]
+    bookmark = {}
+    
+    for i in b.bible['books']:
+        if i['name'] == book:
+            for j in i['chapters']:
+                if j['chapter'] == chapter:
+                    for k in j['verses']:
+                        if k['verse'] == verse:
+                            bookmark = create_bookmark(arr)
+                            # opens the bookmark.json file as bms
+                            try:
+                                with open('bookmark.json', 'r') as file:
+                                    bms = json.load(file)
+                            except FileNotFoundError:
+                                bms = []
+
+                            if bookmark in bms:
+                                print('Bookmark already exists.')
+                                continue
+                            else:
+                                bms.append(bookmark)
+
+                            # opens the json file again and dumps the bookmarks
+                            with open('bookmark.json', 'w') as file:
+                                json.dump(bms, file, indent = 4) # dumps oki to file with 4 indents
+
+                            print('Bookmark Added.')
+                            return input('Press enter to continue.')
+    else:
+        print('Verse not found.')
+

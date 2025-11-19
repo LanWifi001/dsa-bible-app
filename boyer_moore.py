@@ -1,6 +1,7 @@
 import KJV as kjv
 import time as t
 from utils import ascii_box, clear
+import search_history as sh
 
 def boyer_moore(text, pattern):
     m = len(pattern)
@@ -60,7 +61,6 @@ def boyer_moore(text, pattern):
 
     return -1
 
-
 def search_bible(pattern, bible):
     results = []
 
@@ -83,24 +83,58 @@ def search_bible(pattern, bible):
     return results
 
 def run_boyer_moore():
-    print(ascii_box(['Search for a word: '], title = 'Verse of the Day', padding=2, align='center'))
-    user = input('> ')
+    print(ascii_box(['1. Search for a word', '2. View Search History', '3. Clear Search History', '4. Back'], title = 'Word Search', padding=2, align='left'))
+    
+    user = input('Enter the number: ')
     print()
 
-    matches = search_bible(user, kjv.bible)
+    while user.isdigit() == False:
+        clear()
+        print(ascii_box(['1. Search for a word', '2. View Search History', '3. Clear Search History', '4. Back'], title = 'Word Search', padding=2, align='left'))
+        user = input('Invalid input. Number only: ')
 
-    # if len(matches) == 0:
-    #     print('No matches found.')
-    clear()
-    print(f'{len(matches)} matches found.')
-    for i in matches:
-        verse = i.split('+')
-        print(ascii_box(verse, padding=2, align='center'))
-        t.sleep(0.18)
-        print()
-    
-    user = input('Press enter to return.')
-    while user != '':
-        user = input('Press enter only.')
-    if user == '':
-        return
+    user_int = int(user)
+
+    match user_int:
+        case 1:
+            clear()
+            print(ascii_box(['Search for a word.'], title = 'Word Search', padding=2, align='left'))
+            user_search = input('> ')
+            matches = search_bible(user_search, kjv.bible)
+
+            results = len(matches)
+
+            # if len(matches) == 0:
+            #     print('No matches found.')
+            clear()
+            sh.add_to_history(user_search, results)
+            print(f'{results} matches found.')
+            for i in matches:
+                verse = i.split('+')
+                print(ascii_box(verse, padding=2, align='center'))
+                t.sleep(0.18)
+                print()
+            
+            user = input('Press enter to return.')
+            while user != '':
+                user = input('Press enter only.')
+            if user == '':
+                return
+        case 2:
+            clear()
+            sh.show_search_history()
+            user = input('Press enter to return.')
+            while user != '':
+                user = input('Press enter only.')
+            if user == '':
+                return
+        case 3:
+            sh.clear_history()
+        case 4:
+            return
+        case _:
+            clear()
+            print(ascii_box(['1. Search for a word', '2. View Search History', '3. Clear Search History', '4. Back'], title = 'Word Search', padding=2, align='left'))
+            print('Invalid Input. Only pick from the choices: ')
+
+# def highlight(pattern, text):
