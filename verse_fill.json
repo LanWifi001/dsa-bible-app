@@ -1,0 +1,74 @@
+[
+  {
+    "reference": "John 3:16",
+    "text": "For God so ____ the world that he ____ his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+    "answers": ["loved", "gave"],
+    "hint": "New Testament — Gospel of John"
+  },
+  {
+    "reference": "Psalm 23:1",
+    "text": "The Lord is my ____; I shall not ____.",
+    "answers": ["shepherd", "want"],
+    "hint": "Psalm of David"
+  },
+  {
+    "reference": "Genesis 1:1",
+    "text": "In the beginning ____ created the ____ and the earth.",
+    "answers": ["God", "heavens"],
+    "hint": "Creation account"
+  },
+  {
+    "reference": "Philippians 4:13",
+    "text": "I can do all things through ____ who ____ me.",
+    "answers": ["Christ", "strengthens"],
+    "hint": "Letter from Paul"
+  },
+  {
+    "reference": "Proverbs 3:5",
+    "text": "Trust in the Lord with all thine ____; and lean not unto thine own ____.",
+    "answers": ["heart", "understanding"],
+    "hint": "Wisdom verse"
+  },
+  {
+    "reference": "Romans 8:28",
+    "text": "And we know that all things work together for ____ to them that love God, to them who are the called according to his ____.",
+    "answers": ["good", "purpose"],
+    "hint": "Promise of purpose"
+  },
+  {
+    "reference": "Joshua 1:9",
+    "text": "Be ____ and of a good ____; be not afraid, neither be thou dismayed: for the Lord thy God is with thee whithersoever thou goest.",
+    "answers": ["strong", "courage"],
+    "hint": "Encouragement to Joshua"
+  },
+  {
+    "reference": "Psalm 27:1",
+    "text": "The Lord is my ____ and my ____; whom shall I fear? the Lord is the strength of my life; of whom shall I be afraid?",
+    "answers": ["light", "salvation"],
+    "hint": "Confidence in the Lord"
+  },
+  {
+    "reference": "Romans 5:8",
+    "text": "But God commendeth his love toward us, in that, while we were yet ____, Christ ____ for us.",
+    "answers": ["sinners", "died"],
+    "hint": "Demonstration of love"
+  },
+  {
+    "reference": "Jeremiah 29:11",
+    "text": "For I know the thoughts that I think toward you, saith the Lord, thoughts of ____ and not of ____.",
+    "answers": ["peace", "evil"],
+    "hint": "Hope-filled future"
+  },
+  {
+    "reference": "Psalm 119:105",
+    "text": "Thy word is a ____ unto my feet, and a ____ unto my path.",
+    "answers": ["lamp", "light"],
+    "hint": "Guidance verse"
+  },
+  {
+    "reference": "Isaiah 40:31",
+    "text": "They that wait upon the Lord shall renew their ____; they shall mount up with wings as ____.",
+    "answers": ["strength", "eagles"],
+    "hint": "Strength for the weary"
+  }
+]

@@ -5,6 +5,7 @@ from KJV import bible
 import verse_of_the_day as votd
 import color as c
 import time as t
+from mini_games import games_menu
 
 def choices():
     print("Press Q to go back")
@@ -15,7 +16,8 @@ def main():
     menu_lines = ["1. Books", 
                   "2. Bookmarks",
                   "3. Search",
-                  "4. Exit"
+                  "4. Games",
+                  "5. Exit"
                   ]
 
     while True:
@@ -42,6 +44,10 @@ def main():
                 clear()
 
             case '4':
+                games_menu()
+                clear()
+
+            case '5':
                 main_screen()
                 return
             
