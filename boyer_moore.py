@@ -136,7 +136,19 @@ def run_boyer_moore():
                 print('Invalid Input. Only pick from the choices: ')
 
 def view_results(user_search, matches, results): 
-    print('Press enter to view results, or "q" to go back.')
+    counts = 0
+    print('First 10 results.')
+    for i in matches:
+        if counts == 10:
+            break
+        verse = i.split('+')
+        highlight = ascii_box([verse[0], verse[1]], padding=2, align='center')
+        box_color = highlight.replace(user_search, f'{c.BG_BRIGHT_YELLOW}{user_search}{c.RESET}') 
+        print(box_color)
+        t.sleep(0.05)
+        counts += 1
+        print()
+    print('Press enter to view all results, or "q" to go back.')
     user = input('> ')
     while user != '' and user.lower() != 'q':
         clear()
