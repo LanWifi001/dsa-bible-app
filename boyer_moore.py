@@ -187,4 +187,3 @@ def history():
         user = input('Press enter only.')
     if user == '':
         return
-

@@ -1,3 +1,3 @@
-from UI import run_UI
+from UI import main_screen
 
-run_UI()
+main_screen()

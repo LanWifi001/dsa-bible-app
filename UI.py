@@ -43,6 +43,7 @@ def main():
 
             case '4':
                 main_screen()
+                return
             
             case _:
                 clear()
@@ -54,6 +55,7 @@ def main():
                 # if input1 == 'q':
                 #     clear()
                 #     return main()
+    # return
 
 def choose_old_or_new():
     # Extract book names from the KJV.py bible dictionary
@@ -338,7 +340,7 @@ def verses_of_the_day():
 
     while True:
         if choice == '':
-            main()
+            return
         # else:
         #     verses_of_the_day()
 
@@ -358,11 +360,11 @@ def loading_screen():
 
     choice = input ("Press Enter to continue...")
 
-    while True:
-        if choice == '':
-            verses_of_the_day()
-        else:
-            loading_screen()
+    if choice == '':
+        main()
+    #     verses_of_the_day()
+    # else:
+    #     loading_screen()
 
 def main_screen():
     clear()
@@ -376,14 +378,30 @@ def main_screen():
     print(ascii_box(enter, padding=4, align='left'))
     print(c.RESET)
 
-    choice = input("Press Enter to continue...")
+    print("Press Enter to continue or type exit...")
+    choice = input('> ')
 
-    while True:
-        if choice == '':
-            loading_screen()
-        else:
-            main_screen()
+    while choice != '' and choice.lower() != 'exit':
+        clear()
+        print(c.BRIGHT_CYAN)
+        enter = ["  _   _            _     _ _     _",
+        " | |_| |__   ___  | |__ (_) |__ | | ___ ",
+        " | __| '_ \ / _ \ | '_ \| | '_ \| |/ _ \\",
+        " | |_| | | |  __/ | |_) | | |_) | |  __/",
+        "  \__|_| |_|\___| |_.__/|_|_.__/|_|\___|"]
+
+        print(ascii_box(enter, padding=4, align='left'))
+        print(c.RESET)
+        print('Invalid Input. Press Enter to continue or type exit...')
+        choice = input('> ')
+    
+    if choice == '':
+        loading_screen()
+    elif choice.lower() == 'exit':
+        return
+    # else:
+    #     main_screen()
 
 # run main UI
-def run_UI():
-    main_screen()
+# def run_UI():
+#     main_screen()
