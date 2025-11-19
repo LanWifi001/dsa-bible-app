@@ -34,5 +34,3 @@ BG_BRIGHT_BLUE    = "\033[104m"
 BG_BRIGHT_MAGENTA = "\033[105m"
 BG_BRIGHT_CYAN    = "\033[106m"
 BG_BRIGHT_WHITE   = "\033[107m"
-
-print(BG_YELLOW + "This is highlighted scripture" + RESET)

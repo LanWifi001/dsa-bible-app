@@ -2,6 +2,7 @@ import KJV as kjv
 import time as t
 from utils import ascii_box, clear
 import search_history as sh
+import color as c
 
 def boyer_moore(text, pattern):
     m = len(pattern)
@@ -83,14 +84,18 @@ def search_bible(pattern, bible):
     return results
 
 def run_boyer_moore():
+    print(c.CYAN)
     print(ascii_box(['1. Search for a word', '2. View Search History', '3. Clear Search History', '4. Back'], title = 'Word Search', padding=2, align='left'))
-    
+    print(c.RESET)    
+
     user = input('Enter the number: ')
     print()
 
     while user.isdigit() == False:
         clear()
+        print(c.CYAN)
         print(ascii_box(['1. Search for a word', '2. View Search History', '3. Clear Search History', '4. Back'], title = 'Word Search', padding=2, align='left'))
+        print(c.RESET)   
         user = input('Invalid input. Number only: ')
 
     user_int = int(user)
@@ -98,7 +103,9 @@ def run_boyer_moore():
     match user_int:
         case 1:
             clear()
+            print(c.CYAN)
             print(ascii_box(['Search for a word.'], title = 'Word Search', padding=2, align='left'))
+            print(c.RESET)    
             user_search = input('> ')
             matches = search_bible(user_search, kjv.bible)
 
@@ -108,11 +115,15 @@ def run_boyer_moore():
             #     print('No matches found.')
             clear()
             sh.add_to_history(user_search, results)
+            print(c.CYAN)
             print(f'{results} matches found.')
+            print(c.RESET)
             for i in matches:
                 verse = i.split('+')
-                print(ascii_box(verse, padding=2, align='center'))
-                t.sleep(0.18)
+                highlight = ascii_box([verse[0], verse[1]], padding=2, align='center')
+                box_color = highlight.replace(user_search, f'{c.BG_BRIGHT_YELLOW}{user_search}{c.RESET}') 
+                print(box_color)
+                t.sleep(0.05)
                 print()
             
             user = input('Press enter to return.')
@@ -134,7 +145,7 @@ def run_boyer_moore():
             return
         case _:
             clear()
+            print(c.CYAN)
             print(ascii_box(['1. Search for a word', '2. View Search History', '3. Clear Search History', '4. Back'], title = 'Word Search', padding=2, align='left'))
+            print(c.RESET)    
             print('Invalid Input. Only pick from the choices: ')
-
-# def highlight(pattern, text):

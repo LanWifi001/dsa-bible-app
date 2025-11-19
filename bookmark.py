@@ -2,6 +2,7 @@ import KJV as b
 import json
 from utils import ascii_box, clear
 import time
+import color as c
 
 # runs the bookmark function
 def run_bookmark():
@@ -42,7 +43,9 @@ def run_bookmark():
         
 # handles user inputs for bookmarking
 def user_bookmark():
+    print(c.CYAN)
     print(ascii_box(['Add a verse to bookmark or', 'Press enter to exit.'], title='Add a Bookmark', padding=2, align='left'))
+    print(c.RESET)
     user = input('> ')
 
     if user == '':
@@ -134,11 +137,15 @@ def get_verse():
         bookmark = []
 
     if len(bookmark) == 0:
+        print(c.YELLOW)
         print(ascii_box(['You have no bookmarks yet', 'Press enter to go back.'], title='No Bookmarks', padding=2, align='left'))
+        print(c.RESET)        
         user_input = input()
         while user_input != '':
             clear()
+            print(c.CYAN)
             print(ascii_box(['You have no bookmarks yet', 'Press enter to go back.'], title='No Bookmarks', padding=2, align='left'))
+            print(c.RESET)            
             user_input = input('Invalid input, number only, press enter.')
         if user_input == '':
             return
@@ -149,9 +156,9 @@ def get_verse():
         chapter = bookmark[i]['chapter']
         verse = bookmark[i]['verse']
         verses.append(f'{i+1}. {book} {chapter}:{verse}')
-    
+    print(c.CYAN)    
     print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
-
+    print(c.RESET)
     user_input = input('Input the verse number to view or exit: ')
     if user_input.lower() == 'exit':
         return
@@ -188,9 +195,9 @@ def get_verse():
             clear()
             verse.append(f'{in1} {in2}:{in3}')
             verse.append(verse_data['text'])
-    
+    print(c.CYAN)    
     print(ascii_box([verse[1]], title=verse[0], padding=2, align='left'))
-
+    print(c.RESET)
     user = input('\nPress enter to go back.')
 
     while user != '':
@@ -210,11 +217,15 @@ def remove_bookmark():
         bookmark = []
 
     if len(bookmark) == 0:
+        print(c.YELLOW)
         print(ascii_box(['You have no bookmarks yet', 'Press enter to go back.'], title='No Bookmarks', padding=2, align='left'))
+        print(c.RESET)       
         user_input = input()
         while user_input != '':
             clear()
+            print(c.YELLOW)    
             print(ascii_box(['You have no bookmarks yet', 'Press enter to go back.'], title='No Bookmarks', padding=2, align='left'))
+            print(c.RESET)    
             user_input = input('Invalid input, number only, press enter.')
         if user_input == '':
             return
@@ -225,9 +236,9 @@ def remove_bookmark():
         chapter = bookmark[i]['chapter']
         verse = bookmark[i]['verse']
         verses.append(f'{i+1}. {book} {chapter}:{verse}')
-    
+    print(c.CYAN)    
     print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
-
+    print(c.RESET)
     user_input = input('Input bookmark number to remove, or press enter to exit: ')
 
     if user_input == '':
@@ -248,7 +259,9 @@ def remove_bookmark():
     
     while user != '':
         clear()
+        print(c.RED)    
         print(ascii_box(['Invalid Input. Press enter.'], padding=2, align='left'))
+        print(c.RESET)    
         user = input()
     if user == '':
         return
@@ -257,8 +270,9 @@ def remove_bookmark():
 def clear_bookmarks():
     with open('bookmark.json', 'r') as file:
         bookmarks = json.load(file)
-
+    print(c.RED)
     print(ascii_box(['Are you sure, you want to clear the bookmarks? y/n: '], title="Clear Bookmark", padding=2, align='left'))
+    print(c.RESET)    
     user = input('> ')
     while user.lower() not in 'yn':
         user = input('Invalid Input, y or n only: ')
@@ -271,12 +285,16 @@ def clear_bookmarks():
         with open('bookmark.json', 'w') as file:
             json.dump(bookmarks, file)
         clear()
+        print(c.GREEN)
         print(ascii_box(['Bookmarks cleared, press enter to go back.'], title="Clear Bookmark", padding=2, align='left'))
+        print(c.RESET)        
         user = input()
         
         while user != '':
             clear()
+            print(c.RED)
             print(ascii_box(['Invalid. Press Enter.'], title="Clear Bookmark", padding=2, align='left'))
+            print(c.RESET)   
             user = input()
         
         if user == '':
@@ -290,13 +308,16 @@ def start_bm():
         '3. Remove Bookmarks',
         '4. Clear Bookmars',
         '5. Back']
+        print(c.CYAN)    
         print(ascii_box(bm_menu, title="Mini Bible", padding=2, align='left'))
-
+        print(c.RESET)
         user = input('Your Input: ')
 
         while user.isdigit() == False:
             clear()
+            print(c.CYAN)
             print(ascii_box(bm_menu, title="Mini Bible", padding=2, align='left'))
+            print(c.RESET)    
             user = input('Invalid Input. Numbers only: ')
         
         user_int = int(user)

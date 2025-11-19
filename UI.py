@@ -4,9 +4,10 @@ import boyer_moore as bm
 from KJV import bible
 import verse_of_the_day as votd
 import color as c
+import time as t
 
 def choices():
-    print("Press Q to return to the previous Page")
+    print("Press Q to go back")
     return input("Choose a number: ")
 
 def main():
@@ -18,8 +19,11 @@ def main():
                   ]
 
     while True:
+        print(c.YELLOW)
         print(ascii_box(votd.votd, title = 'Verse of the Day', padding=2, align='center'))
+        print(c.CYAN)
         print(ascii_box(menu_lines, title="Mini Bible", padding=2, align='left'))
+        print(c.RESET)
 
         choice = input("Choose a number: ")
         clear()
@@ -42,12 +46,14 @@ def main():
             
             case _:
                 clear()
+                print(c.RED)
                 print(ascii_box([f"Invalid Input"], title="Error", padding=2))
-                print("Press Q to return to the previous Page |")
-                input1 = choice.lower()
-                if input1 == 'q':
-                    clear()
-                    return main()
+                print(c.RESET)
+                # print("Press Q to return to the previous Page |")
+                # input1 = choice.lower()
+                # if input1 == 'q':
+                #     clear()
+                #     return main()
 
 def choose_old_or_new():
     # Extract book names from the KJV.py bible dictionary
@@ -57,27 +63,29 @@ def choose_old_or_new():
     new = books_list[39:]
     while True:
         clear()
+        print(c.CYAN)
         print(ascii_box(['1. Old Testament', '2. New Testament', '3. Return'], title='Select Testament', padding=2, align='left'))
-        choice = choices().lower()
+        print(c.RESET)
+        choice = input('Choose a number: ')
 
         while choice.isdigit == False:
+            print(c.CYAN)
             print(ascii_box(['1. Old Testament', '2. New Testament', '3. Return'], title='Select Testament', padding=2, align='left'))
-            choice = input('Invalid Input.')
+            print(c.RESET)
+            choice = input(c.RED, 'Invalid Input.', c.RESET)
 
-        choice_int = int(choice)
-
-        match choice_int:
-            case 1:
+        match choice:
+            case '1':
                 clear()
                 books_menu(old, 'Old Testament')
-            case 2:
+            case '2':
                 clear()
                 books_menu(new, 'New Testament')
-            case 3:
+            case '3':
                 clear()
                 return
             case _:
-                print('Invlid Input.')
+                print(c.RED, 'Invlid Input.', c.RESET)
 
 def books_menu(books_list, book_title):
     """Display list of books and allow user to select one"""
@@ -116,8 +124,10 @@ def books_menu(books_list, book_title):
             # num += 1
 
         clear()
+        print(c.CYAN)
         print(ascii_box(menu_lines, title=book_title, padding=2, align='left'))
-            
+        print(c.RESET)    
+
         choice = choices()
         input1 = choice.lower()
         # ERROR HANDLING
@@ -129,11 +139,15 @@ def books_menu(books_list, book_title):
         try:
             choice_num = int(choice)
         except ValueError:
+            print(c.RED)
             print(ascii_box([f"Invalid Input"], title="Error", padding=2))
+            print(c.RESET)
             continue
 
         if choice_num not in actions:
+            print(c.RED)
             print(ascii_box([f"Invalid Input"], title="Error", padding=2))
+            print(c.RESET)    
             continue
 
         action, payload = actions[choice_num]
@@ -161,7 +175,9 @@ def chapter_menu(book_name):
             break
     
     if book_data is None:
+        print(c.RED)
         print(ascii_box([f"Book '{book_name}' not found in database"], title="Error", padding=2))
+        print(c.RESET)
         return
     
     # Extract chapters from the book
@@ -200,7 +216,9 @@ def chapter_menu(book_name):
         # actions[num] = ('back', None)
         # num += 1
 
+        print(c.CYAN)        
         print(ascii_box(menu_lines, title=f"{book_name} - Chapters (Page {page+1})", padding=2, align='left'))
+        print(c.RESET)
 
         choice = choices()
         input1 = choice.lower()
@@ -213,11 +231,15 @@ def chapter_menu(book_name):
         try:
             choice_num = int(choice)
         except ValueError:
+            print(c.RED)
             print(ascii_box([f"Invalid Input"], title="Error", padding=2))
+            print(c.RESET)
             continue
 
         if choice_num not in actions:
+            print(c.RED)
             print(ascii_box([f"Invalid Input"], title="Error", padding=2))
+            print(c.RESET)
             continue
 
         action, payload = actions[choice_num]
@@ -239,9 +261,11 @@ def verse_menu(book_name, chapter_num, verses):
     verse_dict = {str(v['verse']): v['text'] for v in verses}
     verse_list = sorted(verse_dict.keys(), key=lambda x: int(x))
     
+    print(c.CYAN)
     print(ascii_box([f"Available verses: {', '.join(verse_list)}"],
                     title=f"{book_name} Chapter {chapter_num}", padding=2, align='center'))
-    
+    print(c.RESET)
+
     # Get starting verse from user
     while True:
         choice = choices()
@@ -255,15 +279,23 @@ def verse_menu(book_name, chapter_num, verses):
         # chapter_menu(book_name)
         else:
             clear()
+            print(c.CYAN)
+            print(ascii_box([f"Available verses: {', '.join(verse_list)}"],
+                            title=f"{book_name} Chapter {chapter_num}", padding=2, align='center'))
+            print(c.RESET)
+            print(c.RED)            
             print(ascii_box([f"Invalid input"], title="Error", padding=2))
-    
+            print(c.RESET)
+
     # Navigate through verses
     while True:
         current_verse = verse_list[current_verse_idx]
         clear()
+        print(c.CYAN)
         print(ascii_box([verse_dict[current_verse]],
                         title=f"{book_name} Chapter {chapter_num} Verse {current_verse}", padding=2, align='center'))
-        
+        print(c.RESET)
+
         # Show navigation instructions
         nav_info = ["Press Enter for next verse", "Press Q to return to chapters", "Press B to Bookmark"]
         if current_verse_idx > 0:
@@ -299,7 +331,9 @@ def verse_menu(book_name, chapter_num, verses):
 
 def verses_of_the_day():
     clear()
+    print(c.YELLOW)        
     print(ascii_box(votd.get_verse_of_the_day(), title = 'Verse of the Day', padding=2, align='center'))
+    print(c.RESET)    
     choice = input("Press Enter to continue...")
 
     while True:
@@ -310,7 +344,18 @@ def verses_of_the_day():
 
 def loading_screen():
     clear()
+    
+    print(c.CYAN)
     print(ascii_box(["Loading Mini Bible..."], padding=2, align='center'))
+    print(c.GREEN)
+    loading = '██████████████████████████████'
+    for bar in loading:
+        print(bar, end='', flush=True)
+        t.sleep(0.02)
+    print(c.RESET)
+
+    print()
+
     choice = input ("Press Enter to continue...")
 
     while True:
