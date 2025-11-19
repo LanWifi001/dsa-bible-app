@@ -47,8 +47,10 @@ verses = {
 }
 
 def get_verse_of_the_day():
+    # seed the randomness using today's date (changes daily)
+    random.seed(datetime.date.today().toordinal())
+
     randomized = random.choice(list(verses.keys()))
     return [randomized, verses[randomized]]
-    # return random.choice(list(verses.keys()))
 
 votd = get_verse_of_the_day()
