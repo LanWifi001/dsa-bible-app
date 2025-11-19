@@ -1,4 +1,5 @@
 import random
+import datetime
 
 # list of verses to be randomized daily
 verses = {
@@ -54,3 +55,4 @@ def get_verse_of_the_day():
     return [randomized, verses[randomized]]
 
 votd = get_verse_of_the_day()
+
