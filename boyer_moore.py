@@ -137,9 +137,9 @@ def run_boyer_moore():
 
 def view_results(user_search, matches, results): 
     counts = 0
-    print('First 10 results.')
+    print('First 50 results.')
     for i in matches:
-        if counts == 10:
+        if counts == 50:
             break
         verse = i.split('+')
         highlight = ascii_box([verse[0], verse[1]], padding=2, align='center')
@@ -187,3 +187,4 @@ def history():
         user = input('Press enter only.')
     if user == '':
         return
+
