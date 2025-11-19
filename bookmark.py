@@ -1,7 +1,6 @@
 import KJV as b
 import json
 from utils import ascii_box, clear
-import time
 import color as c
 
 # runs the bookmark function
@@ -10,12 +9,6 @@ def run_bookmark():
     try:
         with open('bookmark.json', 'r') as file:
             bookmark = json.load(file)
-            if isinstance(bookmark, list):  # if old format list exists, convert to dict
-                new_bookmark = {}
-                for bm in bookmark:
-                    key = f"{bm['book']}-{bm['chapter']}-{bm['verse']}"
-                    new_bookmark[key] = bm
-                bookmark = new_bookmark  # now it's a dict
     except FileNotFoundError:
         bookmark = {}  # changed to dict for hash table
 
@@ -42,7 +35,7 @@ def run_bookmark():
         # if it is not yet in the bookmarks and exists
         else:
             clear()
-            print('Bookmark added! ')
+            print('Bookmark added!')
             bookmark[key] = user  # changed: store in dict with hash key
     
     # opens the json file again and dumps the bookmarks
@@ -84,17 +77,17 @@ def user_bookmark():
             return 'not found'
 
 # function that handles the creation of the bookmark based from the users input
-def create_bookmark(arr):
+def create_bookmark(dict):
     book = ''
     chapter = 0
     verse = 0
-    for i in range(len(arr)):
+    for i in range(len(dict)):
         if i == 0:
-            book = arr[i]
+            book = dict[i]
         elif i == 1:
-            chapter = int(arr[i])
+            chapter = int(dict[i])
         elif i == 2:
-            verse = int(arr[i])
+            verse = int(dict[i])
         else:
             break
     return {
@@ -203,11 +196,15 @@ def remove_bookmark():
     print(c.RESET)
     user_input = input('Input bookmark number to remove, or press enter to exit: ')
 
+    while user_input != '' and user_input.isdigit() == False:
+        clear()
+        print(c.CYAN)    
+        print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
+        print(c.RESET)
+        user_input = input('Invalid input, number only, or press enter to exit: ')
+
     if user_input == '':
         return
-
-    while user_input.isdigit() == False:
-        user_input = input('Invalid input, number only: ')
 
     user_idx = int(user_input) - 1
     if user_idx < 0 or user_idx >= len(keys):
