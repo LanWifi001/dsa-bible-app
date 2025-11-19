@@ -6,12 +6,18 @@ import color as c
 
 # runs the bookmark function
 def run_bookmark():
-    # opens the bookmark.json file as bms
+    # opens the bookmark.json file as bookmark
     try:
         with open('bookmark.json', 'r') as file:
-            bms = json.load(file)
+            bookmark = json.load(file)
+            if isinstance(bookmark, list):  # if old format list exists, convert to dict
+                new_bookmark = {}
+                for bm in bookmark:
+                    key = f"{bm['book']}-{bm['chapter']}-{bm['verse']}"
+                    new_bookmark[key] = bm
+                bookmark = new_bookmark  # now it's a dict
     except FileNotFoundError:
-        bms = []
+        bookmark = {}  # changed to dict for hash table
 
     # user input validation
     while True:
@@ -19,28 +25,31 @@ def run_bookmark():
         user = user_bookmark()
 
         # if the user decides to exit the bookmark loop, the function stops
-        if user == 'exit':
+        if user.lower() == 'exit':
            break
+
+        # if the verse doesn't exist
+        if user == 'not found':
+            continue
         
         # ensures that each bookmark doesn't repeat
-        if user in bms:
+        key = f"{user['book']}-{user['chapter']}-{user['verse']}"  # new: unique hash key
+        if key in bookmark:  # changed to dict lookup
             clear()
             print('Bookmark already exists.')
             continue
         
-        # if the verse doesn't exist
-        if user == 'not found':
-            continue
         # if it is not yet in the bookmarks and exists
         else:
             clear()
             print('Bookmark added! ')
-            bms.append(user)
+            bookmark[key] = user  # changed: store in dict with hash key
     
     # opens the json file again and dumps the bookmarks
     with open('bookmark.json', 'w') as file:
-        json.dump(bms, file, indent = 4) # dumps oki to file with 4 indents 
+        json.dump(bookmark, file, indent = 4)  # hash table dict saved
         
+
 # handles user inputs for bookmarking
 def user_bookmark():
     print(c.CYAN)
@@ -94,47 +103,13 @@ def create_bookmark(arr):
         'verse': verse
     }
 
-# # function that retrieves books that have been bookmarked
-# def retrieve_bookmarks():
-#     try:
-#         with open('bookmark.json', 'r') as file:
-#             bookmark = json.load(file)
-#     except FileNotFoundError:
-#         bookmark = []
-
-#     if len(bookmark) == 0:
-#         print(ascii_box(['You have no bookmarks yet', 'Press enter to go back.'], title='No Bookmarks', padding=2, align='left'))
-#         user_input = input()
-#         while user_input != '':
-#             clear()
-#             print(ascii_box(['You have no bookmarks yet', 'Press enter to go back.'], title='No Bookmarks', padding=2, align='left'))
-#             user_input = input('Invalid input, number only, press enter.')
-#         if user_input == '':
-#             return
-
-#     verses = []
-#     for i in range(len(bookmark)):
-#         book = bookmark[i]['book']
-#         chapter = bookmark[i]['chapter']
-#         verse = bookmark[i]['verse']
-#         verses.append(f'{i+1}. {book} {chapter}:{verse}')
-    
-#     print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
-
-#     user = input('Press enter to go back.')
-
-#     while user != '':
-#         user = input('Invalid input, press enter.')
-#     if user.lower == '':
-#         return
-
 # function to get a verse
 def get_verse():
     try:
         with open('bookmark.json', 'r') as file:
             bookmark = json.load(file)
     except FileNotFoundError:
-        bookmark = []
+        bookmark = {}
 
     if len(bookmark) == 0:
         print(c.YELLOW)
@@ -151,11 +126,10 @@ def get_verse():
             return
 
     verses = []
-    for i in range(len(bookmark)):
-        book = bookmark[i]['book']
-        chapter = bookmark[i]['chapter']
-        verse = bookmark[i]['verse']
-        verses.append(f'{i+1}. {book} {chapter}:{verse}')
+    keys = list(bookmark.keys())  # changed: get keys for indexing
+    for idx, key in enumerate(keys):
+        value = bookmark[key]
+        verses.append(f"{idx+1}. {value['book']} {value['chapter']}:{value['verse']}")
     print(c.CYAN)    
     print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
     print(c.RESET)
@@ -166,24 +140,16 @@ def get_verse():
     while user_input.isdigit() == False:
         user_input = input('Invalid input, number only: ')
 
-    user = int(user_input)
+    user_idx = int(user_input) - 1
+    if user_idx < 0 or user_idx >= len(keys):
+        print("Invalid verse number.")
+        return
 
-    user_verse = []
+    user_verse_data = bookmark[keys[user_idx]]  # changed: access by hash key
 
-    for i in range(len(bookmark)):
-        book = bookmark[i]['book']
-        chapter = bookmark[i]['chapter']
-        verse = bookmark[i]['verse']
-        
-        if user == i+1:
-            user_verse = [book, chapter, verse]
-            break
-        else:
-            continue
-    
-    in1 = user_verse[0]
-    in2 = int(user_verse[1])
-    in3 = int(user_verse[2])
+    in1 = user_verse_data['book']
+    in2 = int(user_verse_data['chapter'])
+    in3 = int(user_verse_data['verse'])
 
     verse = []
 
@@ -191,7 +157,6 @@ def get_verse():
         if i['name'] == in1:
             chapter_data = i['chapters'][in2 - 1]
             verse_data = chapter_data['verses'][in3 - 1]
-            user_verse.clear()
             clear()
             verse.append(f'{in1} {in2}:{in3}')
             verse.append(verse_data['text'])
@@ -206,15 +171,13 @@ def get_verse():
     if user == '':
         return
 
-
-
 # function that removes a bookmark based on the users preferences
 def remove_bookmark():
     try:
         with open('bookmark.json', 'r') as file:
             bookmark = json.load(file)
     except FileNotFoundError:
-        bookmark = []
+        bookmark = {}
 
     if len(bookmark) == 0:
         print(c.YELLOW)
@@ -231,11 +194,10 @@ def remove_bookmark():
             return
 
     verses = []
-    for i in range(len(bookmark)):
-        book = bookmark[i]['book']
-        chapter = bookmark[i]['chapter']
-        verse = bookmark[i]['verse']
-        verses.append(f'{i+1}. {book} {chapter}:{verse}')
+    keys = list(bookmark.keys())  # changed: keys for dict
+    for idx, key in enumerate(keys):
+        value = bookmark[key]
+        verses.append(f"{idx+1}. {value['book']} {value['chapter']}:{value['verse']}")
     print(c.CYAN)    
     print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
     print(c.RESET)
@@ -247,29 +209,26 @@ def remove_bookmark():
     while user_input.isdigit() == False:
         user_input = input('Invalid input, number only: ')
 
-    user = int(user_input)
-    
-    bookmark.pop(user - 1)
+    user_idx = int(user_input) - 1
+    if user_idx < 0 or user_idx >= len(keys):
+        print("Invalid bookmark number.")
+        return
+
+    del bookmark[keys[user_idx]]  # changed: remove by hash key
     print('Bookmark removed! Press enter to return.')
 
-    user = input()
+    input()
 
     with open('bookmark.json', 'w') as file:
         json.dump(bookmark, file, indent = 4)
-    
-    while user != '':
-        clear()
-        print(c.RED)    
-        print(ascii_box(['Invalid Input. Press enter.'], padding=2, align='left'))
-        print(c.RESET)    
-        user = input()
-    if user == '':
-        return
 
 # function that clears the bookmarks
 def clear_bookmarks():
-    with open('bookmark.json', 'r') as file:
-        bookmarks = json.load(file)
+    try:
+        with open('bookmark.json', 'r') as file:
+            bookmarks = json.load(file)
+    except FileNotFoundError:
+        bookmarks = {}
     print(c.RED)
     print(ascii_box(['Are you sure, you want to clear the bookmarks? y/n: '], title="Clear Bookmark", padding=2, align='left'))
     print(c.RESET)    
@@ -281,25 +240,44 @@ def clear_bookmarks():
         return
     elif user.lower() == 'y':
         bookmarks.clear()
-
         with open('bookmark.json', 'w') as file:
             json.dump(bookmarks, file)
         clear()
         print(c.GREEN)
         print(ascii_box(['Bookmarks cleared, press enter to go back.'], title="Clear Bookmark", padding=2, align='left'))
         print(c.RESET)        
-        user = input()
-        
-        while user != '':
-            clear()
-            print(c.RED)
-            print(ascii_box(['Invalid. Press Enter.'], title="Clear Bookmark", padding=2, align='left'))
-            print(c.RESET)   
-            user = input()
-        
-        if user == '':
-            return
-            
+        input()
+
+# start_bm and add_bookmark can remain mostly unchanged, but add_bookmark should use hash table as well
+def add_bookmark(idx1, idx2, idx3):
+    book = idx1
+    chapter = int(idx2)
+    verse = int(idx3)
+
+    key = f"{book}-{chapter}-{verse}"  # changed: unique hash key
+    bookmark_entry = create_bookmark([book, chapter, verse])
+
+    try:
+        with open('bookmark.json', 'r') as file:
+            bookmark = json.load(file)
+            if isinstance(bookmark, list):  # migrate old list to dict
+                new_bookmark = {}
+                for bm in bookmark:
+                    k = f"{bm['book']}-{bm['chapter']}-{bm['verse']}"
+                    new_bookmark[k] = bm
+                bookmark = new_bookmark
+    except FileNotFoundError:
+        bookmark = {}
+
+    if key in bookmark:  # check using hash key
+        print('Bookmark already exists.')
+    else:
+        bookmark[key] = bookmark_entry  # add to dict
+        with open('bookmark.json', 'w') as file:
+            json.dump(bookmark, file, indent=4)
+        print('Bookmark Added.')
+    return input('Press enter to continue.')
+
 def start_bm():
     while True:
         bm_menu = ['Input the number you want to do',
@@ -341,40 +319,3 @@ def start_bm():
                 return
             case _:
                 print('Invalid Input.')
-
-def add_bookmark(idx1, idx2, idx3):
-    book = idx1
-    chapter = int(idx2)
-    verse = int(idx3)
-    arr = [book, chapter, verse]
-    bookmark = {}
-    
-    for i in b.bible['books']:
-        if i['name'] == book:
-            for j in i['chapters']:
-                if j['chapter'] == chapter:
-                    for k in j['verses']:
-                        if k['verse'] == verse:
-                            bookmark = create_bookmark(arr)
-                            # opens the bookmark.json file as bms
-                            try:
-                                with open('bookmark.json', 'r') as file:
-                                    bms = json.load(file)
-                            except FileNotFoundError:
-                                bms = []
-
-                            if bookmark in bms:
-                                print('Bookmark already exists.')
-                                continue
-                            else:
-                                bms.append(bookmark)
-
-                            # opens the json file again and dumps the bookmarks
-                            with open('bookmark.json', 'w') as file:
-                                json.dump(bms, file, indent = 4) # dumps oki to file with 4 indents
-
-                            print('Bookmark Added.')
-                            return input('Press enter to continue.')
-    else:
-        print('Verse not found.')
-
