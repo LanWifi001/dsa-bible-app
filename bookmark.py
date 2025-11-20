@@ -12,13 +12,15 @@ def run_bookmark():
     except FileNotFoundError:
         bookmark = {}  # changed to dict for hash table
 
-    # user input validation
+    # user .strip() validation
     while True:
         # holds the user bookmark array
         user = user_bookmark()
 
+        user_str = str(user)
+
         # if the user decides to exit the bookmark loop, the function stops
-        if user.lower() == 'exit':
+        if user_str.lower() == 'exit':
            break
 
         # if the verse doesn't exist
@@ -45,25 +47,31 @@ def run_bookmark():
 
 # handles user inputs for bookmarking
 def user_bookmark():
+    # instructions for bookmarking a verse
     print(c.CYAN)
-    print(ascii_box(['Add a verse to bookmark or', 'Press enter to exit.'], title='Add a Bookmark', padding=2, align='left'))
+    print(ascii_box(['Add a verse to bookmark or', 'Press enter to exit'], title='Add a Bookmark', padding=2, align='left'))
     print(c.RESET)
-    user = input('> ')
+    print('Enter with this format (Genesis 1 1)')
+    user = input('> ').strip()
 
+    # user input validation
     if user == '':
         return 'exit'
     else:
         user_arr = user.split()
 
+        # if the user's input is less than 3, it'll count as an invalid verse for a valid verse needs to have 3 inputs
         if len(user_arr) != 3:
             clear()
             print('Invalid Input!')
             return 'not found'
 
+        # every index for user's input has their corresponding value. Index 1 = book, index 2 = chapter, index 3 = verse
         book = user_arr[0]
         chapter = int(user_arr[1])
         verse = int(user_arr[2])
         
+        # checks if the user's input exists in the bible. If not, it'll print "Verse not found."
         for i in b.bible['books']:
             if i['name'] == book:
                 for j in i['chapters']:
@@ -73,23 +81,29 @@ def user_bookmark():
                                 bookmark = create_bookmark(user_arr)
                                 return bookmark
         else:
+            clear()
             print('Verse not found.')
             return 'not found'
 
 # function that handles the creation of the bookmark based from the users input
-def create_bookmark(dict):
+def create_bookmark(arr):
+    # initializes the placeholders for book, chapter, and verse that'll be inserted inside the bookmark 
     book = ''
     chapter = 0
     verse = 0
-    for i in range(len(dict)):
+
+    # puts the placeholders to their respective places
+    for i in range(len(arr)):
         if i == 0:
-            book = dict[i]
+            book = arr[i]
         elif i == 1:
-            chapter = int(dict[i])
+            chapter = int(arr[i])
         elif i == 2:
-            verse = int(dict[i])
+            verse = int(arr[i])
         else:
             break
+    
+    # returns a dictonary to be inserted inside the hash table 
     return {
         'book': book,
         'chapter': chapter,
@@ -108,13 +122,13 @@ def get_verse():
         print(c.YELLOW)
         print(ascii_box(['You have no bookmarks yet', 'Press enter to go back.'], title='No Bookmarks', padding=2, align='left'))
         print(c.RESET)        
-        user_input = input()
+        user_input = input().strip()
         while user_input != '':
             clear()
             print(c.CYAN)
             print(ascii_box(['You have no bookmarks yet', 'Press enter to go back.'], title='No Bookmarks', padding=2, align='left'))
             print(c.RESET)            
-            user_input = input('Invalid input, number only, press enter.')
+            user_input = input('Invalid input, number only, press enter.').strip()
         if user_input == '':
             return
 
@@ -126,12 +140,17 @@ def get_verse():
     print(c.CYAN)    
     print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
     print(c.RESET)
-    user_input = input('Input the verse number to view or exit: ')
+    user_input = input('Input the verse number to view or exit: ').strip()
+
+    while user_input.isdigit() == False and user_input.lower() != 'exit':
+        clear()
+        print(c.CYAN)    
+        print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
+        print(c.RESET)
+        user_input = input('Invalid input, number only or exit: ').strip()
+
     if user_input.lower() == 'exit':
         return
-    
-    while user_input.isdigit() == False:
-        user_input = input('Invalid input, number only: ')
 
     user_idx = int(user_input) - 1
     if user_idx < 0 or user_idx >= len(keys):
@@ -156,10 +175,10 @@ def get_verse():
     print(c.CYAN)    
     print(ascii_box([verse[1]], title=verse[0], padding=2, align='left'))
     print(c.RESET)
-    user = input('\nPress enter to go back.')
+    user = input('Press enter to go back.').strip()
 
     while user != '':
-        user = input('Invalid Input, press enter.')
+        user = input('Invalid Input, press enter.').strip()
 
     if user == '':
         return
@@ -176,13 +195,13 @@ def remove_bookmark():
         print(c.YELLOW)
         print(ascii_box(['You have no bookmarks yet', 'Press enter to go back.'], title='No Bookmarks', padding=2, align='left'))
         print(c.RESET)       
-        user_input = input()
+        user_input = input().strip()
         while user_input != '':
             clear()
             print(c.YELLOW)    
             print(ascii_box(['You have no bookmarks yet', 'Press enter to go back.'], title='No Bookmarks', padding=2, align='left'))
             print(c.RESET)    
-            user_input = input('Invalid input, number only, press enter.')
+            user_input = input('Invalid input, number only, press enter.').strip()
         if user_input == '':
             return
 
@@ -194,14 +213,14 @@ def remove_bookmark():
     print(c.CYAN)    
     print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
     print(c.RESET)
-    user_input = input('Input bookmark number to remove, or press enter to exit: ')
+    user_input = input('Input bookmark number to remove, or press enter to exit: ').strip()
 
     while user_input != '' and user_input.isdigit() == False:
         clear()
         print(c.CYAN)    
         print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
         print(c.RESET)
-        user_input = input('Invalid input, number only, or press enter to exit: ')
+        user_input = input('Invalid input, number only, or press enter to exit: ').strip()
 
     if user_input == '':
         return
@@ -211,13 +230,28 @@ def remove_bookmark():
         print("Invalid bookmark number.")
         return
 
-    del bookmark[keys[user_idx]]  # changed: remove by hash key
-    print('Bookmark removed! Press enter to return.')
+    clear()
+    print(c.CYAN)    
+    print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
+    print(c.RESET)
 
-    input()
+    del bookmark[keys[user_idx]]  # changed: remove by hash key
 
     with open('bookmark.json', 'w') as file:
         json.dump(bookmark, file, indent = 4)
+    
+    print('Bookmark removed! Press enter to return.')
+
+    user = input().strip()
+    while user != '':
+        clear()
+        print(c.CYAN)    
+        print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
+        print(c.RESET)
+        print('Invalid Input! Press enter to return.')
+        user = input().strip()
+    if user == '':
+        return
 
 # function that clears the bookmarks
 def clear_bookmarks():
@@ -229,9 +263,9 @@ def clear_bookmarks():
     print(c.RED)
     print(ascii_box(['Are you sure, you want to clear the bookmarks? y/n: '], title="Clear Bookmark", padding=2, align='left'))
     print(c.RESET)    
-    user = input('> ')
+    user = input('> ').strip()
     while user.lower() not in 'yn':
-        user = input('Invalid Input, y or n only: ')
+        user = input('Invalid Input, y or n only: ').strip()
     
     if user.lower() == 'n':
         return
@@ -243,7 +277,7 @@ def clear_bookmarks():
         print(c.GREEN)
         print(ascii_box(['Bookmarks cleared, press enter to go back.'], title="Clear Bookmark", padding=2, align='left'))
         print(c.RESET)        
-        input()
+        input().strip()
 
 # start_bm and add_bookmark can remain mostly unchanged, but add_bookmark should use hash table as well
 def add_bookmark(idx1, idx2, idx3):
@@ -273,7 +307,7 @@ def add_bookmark(idx1, idx2, idx3):
         with open('bookmark.json', 'w') as file:
             json.dump(bookmark, file, indent=4)
         print('Bookmark Added.')
-    return input('Press enter to continue.')
+    return input('Press enter to continue.').strip()
 
 def start_bm():
     while True:
@@ -286,14 +320,14 @@ def start_bm():
         print(c.CYAN)    
         print(ascii_box(bm_menu, title="Bookmarks Menu", padding=2, align='left'))
         print(c.RESET)
-        user = input('Your Input: ')
+        user = input('Your Input: ').strip()
 
         while user.isdigit() == False:
             clear()
             print(c.CYAN)
             print(ascii_box(bm_menu, title="Bookmarks Menu", padding=2, align='left'))
             print(c.RESET)    
-            user = input('Invalid Input. Numbers only: ')
+            user = input('Invalid Input. Numbers only: ').strip()
         
         user_int = int(user)
 

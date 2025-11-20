@@ -9,15 +9,16 @@ from mini_games import games_menu
 
 def choices():
     print("Press Q to go back")
-    return input("Choose a number: ")
+    return input("Choose a number: ").strip()
 
 def main():
     clear()
     menu_lines = ["1. Books", 
                   "2. Bookmarks",
-                  "3. Search",
-                  "4. Games",
-                  "5. Exit"
+                  "3. Search Verse",
+                  "4. Search Text",
+                  "5. Games",
+                  "6. Exit"
                   ]
 
     while True:
@@ -27,7 +28,7 @@ def main():
         print(ascii_box(menu_lines, title="Mini Bible", padding=2, align='left'))
         print(c.RESET)
 
-        choice = input("Choose a number: ")
+        choice = input("Choose a number: ").strip()
         clear()
         
         match choice:
@@ -40,14 +41,18 @@ def main():
                 clear()
 
             case '3':
-                bm.run_boyer_moore()
+                search_verse()
                 clear()
 
             case '4':
-                games_menu()
+                bm.run_boyer_moore()
                 clear()
 
             case '5':
+                games_menu()
+                clear()
+
+            case '6':
                 main_screen()
                 return
             
@@ -74,13 +79,13 @@ def choose_old_or_new():
         print(c.CYAN)
         print(ascii_box(['1. Old Testament', '2. New Testament', '3. Return'], title='Select Testament', padding=2, align='left'))
         print(c.RESET)
-        choice = input('Choose a number: ')
+        choice = input('Choose a number: ').strip()
 
         while choice.isdigit == False:
             print(c.CYAN)
             print(ascii_box(['1. Old Testament', '2. New Testament', '3. Return'], title='Select Testament', padding=2, align='left'))
             print(c.RESET)
-            choice = input(c.RED, 'Invalid Input.', c.RESET)
+            choice = input(c.RED, 'Invalid Input.', c.RESET).strip()
 
         match choice:
             case '1':
@@ -319,7 +324,7 @@ def verse_menu(book_name, chapter_num, verses):
             else:
                 clear()
                 print(ascii_box(["No more verses in this chapter"], title="End of Chapter", padding=2))
-                input("Press Enter to return...")
+                input("Press Enter to return...").strip()
                 clear()
                 return chapter_menu(book_name)
         elif user_input == 'p':
@@ -333,7 +338,7 @@ def verse_menu(book_name, chapter_num, verses):
         elif user_input == 'b':
             user = b.add_bookmark(book_name, chapter_num, current_verse)
             while user != '':
-                user = input('Invalid Input.')
+                user = input('Invalid Input.').strip()
             if user == '':
                 continue
 
@@ -342,7 +347,7 @@ def verses_of_the_day():
     print(c.YELLOW)        
     print(ascii_box(votd.get_verse_of_the_day(), title = 'Verse of the Day', padding=2, align='center'))
     print(c.RESET)    
-    choice = input("Press Enter to continue...")
+    choice = input("Press Enter to continue...").strip()
 
     while True:
         if choice == '':
@@ -364,7 +369,7 @@ def loading_screen():
 
     print()
 
-    choice = input ("Press Enter to continue...")
+    choice = input ("Press Enter to continue...").strip()
 
     if choice == '':
         main()
@@ -385,7 +390,7 @@ def main_screen():
     print(c.RESET)
 
     print("Press Enter to continue or type exit...")
-    choice = input('> ')
+    choice = input('> ').strip()
 
     while choice != '' and choice.lower() != 'exit':
         clear()
@@ -399,7 +404,7 @@ def main_screen():
         print(ascii_box(enter, padding=4, align='left'))
         print(c.RESET)
         print('Invalid Input. Press Enter to continue or type exit...')
-        choice = input('> ')
+        choice = input('> ').strip()
     
     if choice == '':
         loading_screen()
@@ -408,6 +413,61 @@ def main_screen():
     # else:
     #     main_screen()
 
-# run main UI
-# def run_UI():
-#     main_screen()
+def search_verse():
+    print(c.BRIGHT_CYAN)
+    print(ascii_box(['Search for a verse or', 'Press enter to exit'], title='Verse Search', padding=2, align='left'))
+    print(c.RESET)
+    print('Enter with this format (Genesis 1 1)')
+
+    while True:
+        user = input('> ').strip()
+
+        # user input validation
+        if user == '':
+            return
+        else:
+            user_arr = user.split()
+
+            # if the user's input is less than 3, it'll count as an invalid verse for a valid verse needs to have 3 inputs
+            while len(user_arr) != 3:
+                clear()
+                print(c.BRIGHT_CYAN)
+                print(ascii_box(['Search for a verse or', 'Press enter to exit'], title='Verse Search', padding=2, align='left'))
+                print(c.RESET)
+                print('Invalid Input! Enter with this format (Genesis 1 1)')
+                user = input('> ').strip()
+                user_arr = user.split()
+
+            # every index for user's input has their corresponding value. Index 1 = book, index 2 = chapter, index 3 = verse
+            book = user_arr[0]
+            chapter = int(user_arr[1])
+            verse = int(user_arr[2])
+            
+            # checks if the user's input exists in the bible. If not, it'll print "Verse not found."
+            for i in bible['books']:
+                if i['name'] == book:
+                    for j in i['chapters']:
+                        if j['chapter'] == chapter:
+                            for k in j['verses']:
+                                if k['verse'] == verse:
+                                    clear()
+                                    print(c.BRIGHT_CYAN)
+                                    print(ascii_box([k['text']], title=f'{book} {chapter}:{verse}', padding=2, align='left'))
+                                    print(c.RESET)
+                                    user = input('Press enter to go back.').strip()
+                                    while user != '':
+                                        user = input('Invalid Input. Press enter only.').strip()
+                                    if user == '':
+                                        clear()
+                                        return 
+            else:
+                clear()
+                print(c.BRIGHT_CYAN)
+                print(ascii_box(['Verse not found.'], title='Verse Search', padding=2, align='left'))
+                print(c.RESET)
+                user = input('Press enter to go back.').strip()
+                while user != '':
+                    user = input('Invalid Input. Press enter only.').strip()
+                if user == '':
+                    clear()
+                    return 
