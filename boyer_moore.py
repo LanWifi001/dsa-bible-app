@@ -168,33 +168,7 @@ def run_boyer_moore():
 # ---------------------------------------
 def view_results(user_search, matches, results): 
     counts = 0
-    print('First 50 results.')
-    for i in matches:
-        if counts == 50:
-            break
-        verse = i.split('+')  # split reference and text
-        highlight = ascii_box([verse[0], verse[1]], padding=2, align='center')
-        # highlight search term
-        box_color = highlight.replace(user_search, f'{c.BG_BRIGHT_YELLOW}{user_search}{c.RESET}') 
-        print(box_color)
-        t.sleep(0.05)
-        counts += 1
-        print()
-    
-    print('Press enter to view all results, or "q" to go back.')
-    user = input('> ').strip()
-    
-    # Validate input
-    while user != '' and user.lower() != 'q':
-        clear()
-        print(c.CYAN)
-        print(ascii_box([f'{results} matches found.'], title = 'Matches', padding=2, align='left'))
-        print(c.RESET)
-        print('Invalid Input. Press enter or "q" only.')
-        user = input('> ').strip()
-
-    # Show all results if user presses enter
-    if user == '':
+    if results < 20:
         clear()
         print(c.CYAN)
         print(ascii_box([f'{results} matches found.'], title = 'Matches', padding=2, align='left'))
@@ -212,8 +186,53 @@ def view_results(user_search, matches, results):
             user = input('Press enter only.').strip()
         if user == '':
             return
-    elif user == 'q':
-        return
+    else:
+        print('First 20 results.')
+        for i in matches:
+            if counts == 20:
+                break
+            verse = i.split('+')  # split reference and text
+            highlight = ascii_box([verse[0], verse[1]], padding=2, align='center')
+            # highlight search term
+            box_color = highlight.replace(user_search, f'{c.BG_BRIGHT_YELLOW}{user_search}{c.RESET}') 
+            print(box_color)
+            t.sleep(0.05)
+            counts += 1
+            print()
+        
+        print('Press enter to view all results, or "q" to go back.')
+        user = input('> ').strip()
+        
+        # Validate input
+        while user != '' and user.lower() != 'q':
+            clear()
+            print(c.CYAN)
+            print(ascii_box([f'{results} matches found.'], title = 'Matches', padding=2, align='left'))
+            print(c.RESET)
+            print('Invalid Input. Press enter or "q" only.')
+            user = input('> ').strip()
+
+        # Show all results if user presses enter
+        if user == '':
+            clear()
+            print(c.CYAN)
+            print(ascii_box([f'{results} matches found.'], title = 'Matches', padding=2, align='left'))
+            print(c.RESET)
+            for i in matches:
+                verse = i.split('+')
+                highlight = ascii_box([verse[0], verse[1]], padding=2, align='center')
+                box_color = highlight.replace(user_search, f'{c.BG_BRIGHT_YELLOW}{user_search}{c.RESET}') 
+                print(box_color)
+                t.sleep(0.05)
+                print()
+            
+            user = input('Press enter to return.').strip()
+            while user != '':
+                user = input('Press enter only.').strip()
+            if user == '':
+                return
+        elif user == 'q':
+            return
 
 # ---------------------------------------
 # Function: history
