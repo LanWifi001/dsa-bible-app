@@ -171,13 +171,13 @@ def get_verse():
     print(c.RESET)
 
     # Get user selection
-    user_input = input('Input the verse number to view or "q": ').strip()
+    user_input = input('Input the verse number to view or press "q" to return: ').strip()
     while user_input.isdigit() == False and user_input.lower() != 'q':
         clear()
         print(c.CYAN)    
         print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
         print(c.RESET)
-        user_input = input('Invalid input, number only or "q": ').strip()
+        user_input = input('Invalid input, number only or press "q" to return: ').strip()
     if user_input.lower() == 'q':
         return
 
@@ -254,13 +254,13 @@ def remove_bookmark():
     print(c.RESET)
 
     # Get user input for deletion
-    user_input = input('Input bookmark number to remove, or press enter to q: ').strip()
+    user_input = input('Input bookmark number to remove, or press enter to exit: ').strip()
     while user_input != '' and user_input.isdigit() == False:
         clear()
         print(c.CYAN)    
         print(ascii_box(verses, title='Bookmarks', padding=2, align='left'))
         print(c.RESET)
-        user_input = input('Invalid input, number only, or press enter to q: ').strip()
+        user_input = input('Invalid input, number only, or press enter to exit: ').strip()
     if user_input == '':
         return
 
