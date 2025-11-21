@@ -144,7 +144,7 @@ def books_menu(books_list, book_title):
 
         if input1 == 'q':  # Return to main menu
             clear()
-            return main()
+            return
 
         try:
             choice_num = int(choice)  # Convert to integer
