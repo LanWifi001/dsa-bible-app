@@ -1,115 +1,128 @@
-import KJV as k
-import json
-import os
-from datetime import datetime
-from utils import ascii_box, clear
-import color as c
+import KJV as k           # Bible data to reference during searches
+import json               # Save/load history in JSON
+import os                 # File handling, e.g., check if history file exists
+from datetime import datetime  # Timestamp each search
+from utils import ascii_box, clear  # Nicely format search history and clear screen
+import color as c         # Terminal text colors
 
-# History file name
+# File to store search history
 HISTORY_FILE = "bible_history.json"
 
+# Load search history from JSON file
 def load_search_history():
-    """Load search history from JSON file"""
     try:
         if os.path.exists(HISTORY_FILE):
             with open(HISTORY_FILE, 'r') as f:
                 history = json.load(f)
-                # Make sure it's a list
+                # Ensure loaded data is a list
                 if isinstance(history, list):
                     return history
-        # Return empty list if file doesn't exist or is invalid
+        # Return empty list if file doesn't exist or invalid
         return []
     except Exception as e:
         print(f"Warning: Could not load history - {e}")
         return []
 
+# Save search history to JSON file
 def save_search_history(history):
-    """Save search history to JSON file"""
     try:
         with open(HISTORY_FILE, 'w') as f:
             json.dump(history, f, indent=2)
-        # Print confirmation (can be removed later)
+        # Confirmation message (optional)
         print(f"Search saved to history: {HISTORY_FILE}")
     except Exception as e:
         print(f"Error: Could not save history - {e}")
 
+# Clear the search history
 def clear_history():
     clear()
     cleared = load_search_history()
 
+    # Ask user for confirmation
+    print(c.RED)
+    print(ascii_box(['Do you want to clear the search history? y/n'], title='Clear Search History', padding=2, align='left'))
+    print(c.RESET)
+    user = input('> ').strip()
 
-    print(ascii_box(['Do you want to clear the search history? y/n'], title = 'Clear Search History', padding=2, align='left'))
-    user = input('> ')
-
+    # Validate input (only y/n)
     while user.lower() not in 'yn':
         clear()
-        print(ascii_box(['Do you want to clear the search history? y/n'], title = 'Clear Search History', padding=2, align='left'))
-        user = input('Invalid Input. y or n only:')
+        print(c.RED)
+        print(ascii_box(['Do you want to clear the search history? y/n'], title='Clear Search History', padding=2, align='left'))
+        print(c.RESET)
+        user = input('Invalid Input. y or n only:').strip()
     
     if user.lower() == 'n':
         return
     elif user.lower() == 'y':
-        cleared.clear()
-        save_search_history(cleared)
+        cleared.clear()  # Clear history list
+        save_search_history(cleared)  # Save empty list
         clear()
-        print(ascii_box(['Search History Cleared. Press enter to go back.'], title = 'Clear Search History', padding=2, align='left'))
-        user = input()
+        print(c.GREEN)
+        print(ascii_box(['Search History Cleared. Press enter to go back.'], title='Clear Search History', padding=2, align='left'))
+        print(c.RESET)
+        user = input().strip()
 
+        # Ensure user presses enter
         while user != '':
             clear()
-            print(ascii_box(['Invalid input. Press enter to go back.'], title = 'Clear Search History', padding=2, align='left'))
-            user = input()
+            print(c.CYAN)
+            print(ascii_box(['Invalid input. Press enter to go back.'], title='Clear Search History', padding=2, align='left'))
+            print(c.RESET)
+            user = input().strip()
         if user == '':
             return
 
+# Add a search entry to history
 def add_to_history(search_word, results_count):
-    """Add search to history"""
-    history = load_search_history()
+    history = load_search_history()  # Load existing history
     
+    # Create new search entry
     search_entry = {
         "word": search_word,
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "results": results_count
     }
     
-    # Add to beginning so newest appears first
+    # Add new search at the beginning (latest first)
     history.insert(0, search_entry)
     
     # Keep only last 100 searches
     if len(history) > 100:
         history = history[:100]
     
-    save_search_history(history)
+    save_search_history(history)  # Save updated history
 
+# Show all search history
 def show_search_history():
-    """Display search history"""
-    history = load_search_history()
+    history = load_search_history()  # Load existing history
     
+    # If no history found
     if not history:
         print(c.CYAN)
-        print(ascii_box([f"Search History ({len(history)} entries)"], title = 'No search history found', padding=2, align='left'))
+        print(ascii_box([f"Search History ({len(history)} entries)"], title='No search history found', padding=2, align='left'))
         print(c.RESET)
         return
     
+    # Display history with number, word, result count, and timestamp
     print(c.CYAN)
-    print(ascii_box([f"Search History ({len(history)} entries)"], title = 'Word Search', padding=2, align='left'))
+    print(ascii_box([f"Search History ({len(history)} entries)"], title='Word Search', padding=2, align='left'))
     print(c.RESET)
     for i, entry in enumerate(history, 1):
         print(f"{i}. '{entry['word']}' - {entry['results']} results ({entry['timestamp']})")
 
+# Build KMP partial match table for pattern
 def build_kmp_table(pattern):
-    """
-    Build the partial match table for KMP algorithm
-    """
     if not pattern:
         return []
     
     table = [0] * len(pattern)
     j = 0
     
+    # Loop to build table
     for i in range(1, len(pattern)):
         while j > 0 and pattern[i] != pattern[j]:
-            j = table[j - 1]
+            j = table[j - 1]  # Fallback in table
         
         if pattern[i] == pattern[j]:
             j += 1
@@ -119,12 +132,9 @@ def build_kmp_table(pattern):
     
     return table
 
+# KMP search to find all positions of pattern in text
 def kmp_search_with_positions(text, pattern):
-    """
-    Search for pattern in text using KMP algorithm
-    Returns list of start positions where pattern is found
-    """
-    positions = []
+    positions = []  # Stores all start positions of matches
     
     if not pattern:
         return positions
@@ -155,10 +165,8 @@ def kmp_search_with_positions(text, pattern):
     
     return positions
 
+# Highlight all occurrences of pattern in text
 def highlight_word(text, pattern):
-    """
-    Highlight the pattern in text with red color
-    """
     if not pattern:
         return text
     
@@ -172,6 +180,7 @@ def highlight_word(text, pattern):
     result = []
     last_pos = 0
     
+    # Add colored segments to result
     for pos in positions:
         result.append(text[last_pos:pos])
         result.append(f"{red_color}{text[pos:pos+len(pattern)]}{reset_color}")
@@ -180,10 +189,8 @@ def highlight_word(text, pattern):
     result.append(text[last_pos:])
     return "".join(result)
 
+# Search all Bible verses for a word
 def search_and_highlight(search_word):
-    """
-    Search for word in all Bible verses and highlight matches
-    """
     results = []
     
     for book in k.bible['books']:
@@ -191,7 +198,7 @@ def search_and_highlight(search_word):
             for verse in chapter['verses']:
                 verse_text = verse['text']
                 
-                # Check if word exists in verse using KMP
+                # Use KMP to check if word exists
                 if kmp_search_with_positions(verse_text, search_word):
                     results.append({
                         'book': book['name'],
@@ -202,10 +209,8 @@ def search_and_highlight(search_word):
     
     return results
 
+# Display results with the search word highlighted
 def display_highlighted_results(results, search_word):
-    """
-    Display results with highlighted search word
-    """
     if not results:
         print(f"\nNo results found for '{search_word}'")
         return
@@ -219,14 +224,13 @@ def display_highlighted_results(results, search_word):
         verse = result['verse']
         text = result['text']
         
-        # Highlight the search word in the verse text
-        highlighted_text = highlight_word(text, search_word)
+        highlighted_text = highlight_word(text, search_word)  # Highlight word
         
         print(f"{book} {chapter}:{verse}")
         print(f"  {highlighted_text}")
         print("-" * 60)
 
-# Main program
+# Main program loop
 def main():
     print("=== BIBLE WORD SEARCH WITH HIGHLIGHTING ===")
     
@@ -241,14 +245,13 @@ def main():
                 continue
             
             print(f"\nSearching for '{search_word}'...")
-            results = search_and_highlight(search_word)
-            display_highlighted_results(results, search_word)
+            results = search_and_highlight(search_word)  # Perform search
+            display_highlighted_results(results, search_word)  # Show results
             
-            # Add to history
-            add_to_history(search_word, len(results))
+            add_to_history(search_word, len(results))  # Save to history
             
         elif choice == "2":
-            show_search_history()
+            show_search_history()  # Display search history
             
         elif choice == "3":
             print("Goodbye!")

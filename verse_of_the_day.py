@@ -1,7 +1,9 @@
 import random
-import datetime
+import datetime as dt
+import json
 
-# list of verses to be randomized daily
+# Dictionary of Bible verses
+# Keys: verse references, Values: verse text
 verses = {
     "John 3:16": "For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.",
     "Psalm 23:1": "The Lord is my shepherd; I shall not want.",
@@ -47,11 +49,60 @@ verses = {
     "Ephesians 5:20": "Giving thanks always for all things unto God and the Father in the name of our Lord Jesus Christ."
 }
 
+# ---------------------------------------
+# Function: get_verse_of_the_day
+# Description: Returns the verse of the day, ensuring it stays the same during the day
+# ---------------------------------------
 def get_verse_of_the_day():
-    # seed the randomness using today's date (changes daily)
-    random.seed(datetime.date.today().toordinal())
+    votd = open_votd()                # Load previously saved verse of the day
+    today = dt.date.today()            # Get today's date
+    today_arr = str(today).split('-')  # Split date into [year, month, day]
+    day = today_arr[2]                 # Extract day as string
 
-    randomized = random.choice(list(verses.keys()))
-    return [randomized, verses[randomized]]
+    randomized = random.choice(list(verses.keys()))  # Pick a random verse
+    show = []                          # List to store verse reference and text
 
-votd = get_verse_of_the_day()
+    if len(votd) == 0:
+        # If no votd file exists or it's empty, save a new verse
+        votd['day'] = day
+        votd['verse'] = randomized
+        dump_votd(votd)
+
+        votd = open_votd()  # Reload saved verse
+        show.append(votd['verse'])
+        show.append(verses[votd['verse']])
+    elif len(votd) > 0 and day == votd['day']:
+        # If votd exists and it's still the same day, use the saved verse
+        show.append(votd['verse'])
+        show.append(verses[votd['verse']])
+    elif len(votd) > 0 and day != votd['day']:
+        # If votd exists but day has changed, pick a new verse
+        votd['day'] = day
+        votd['verse'] = randomized
+        dump_votd(votd)
+
+        votd = open_votd()  # Reload saved verse
+        show.append(votd['verse'])
+        show.append(verses[votd['verse']])        
+
+    return show  # Returns a list: [verse reference, verse text]
+
+# ---------------------------------------
+# Function: open_votd
+# Description: Loads verse of the day from JSON file
+# ---------------------------------------
+def open_votd():
+    try:
+        with open('verse_of_the_day.json', 'r') as file:
+            votd = json.load(file)  # Load existing votd
+    except FileNotFoundError:
+        votd = {}  # If file doesn't exist, return empty dict
+    return votd
+
+# ---------------------------------------
+# Function: dump_votd
+# Description: Saves verse of the day to JSON file
+# ---------------------------------------
+def dump_votd(votd):
+    with open('verse_of_the_day.json', 'w') as file:
+        json.dump(votd, file, indent=4)  # Save votd in pretty JSON format
