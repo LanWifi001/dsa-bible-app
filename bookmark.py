@@ -377,7 +377,7 @@ def start_bm():
         '2. Add Bookmarks',
         '3. Remove Bookmarks',
         '4. Clear Bookmars',
-        '5. Back']
+        '5. Return']
         print(c.CYAN)    
         print(ascii_box(bm_menu, title="Bookmarks Menu", padding=2, align='left'))
         print(c.RESET)
@@ -412,3 +412,4 @@ def start_bm():
                 return
             case _:
                 print('Invalid Input.')
+
