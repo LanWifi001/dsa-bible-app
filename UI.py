@@ -144,7 +144,7 @@ def books_menu(books_list, book_title):
 
         if input1 == 'q':  # Return to main menu
             clear()
-            return
+            return 
 
         try:
             choice_num = int(choice)  # Convert to integer
@@ -427,14 +427,14 @@ def search_verse():
 
             # Search for verse in Bible
             for i in bible['books']:
-                if i['name'] == book:
+                if i['name'].lower() == book.lower():
                     for j in i['chapters']:
                         if j['chapter'] == chapter:
                             for k in j['verses']:
                                 if k['verse'] == verse:
                                     clear()
                                     print(c.BRIGHT_CYAN)
-                                    print(ascii_box([k['text']], title=f'{book} {chapter}:{verse}', padding=2, align='left'))
+                                    print(ascii_box([k['text']], title=f'{book.title()} {chapter}:{verse}', padding=2, align='left'))
                                     print(c.RESET)
                                     user = input('Press enter to go back.').strip()
                                     while user != '':

@@ -114,7 +114,7 @@ def create_bookmark(arr):
     # Map input array to respective fields
     for i in range(len(arr)):
         if i == 0:
-            book = arr[i]
+            book = arr[i].title()
         elif i == 1:
             chapter = int(arr[i])
         elif i == 2:
