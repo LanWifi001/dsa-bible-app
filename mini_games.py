@@ -19,9 +19,7 @@ def _choices():
 def games_menu():
     options = [
         "1. Verse Fill-in",
-        "2. Who Said It? (coming soon)",
-        "3. Story Sequence (coming soon)",
-        "4. Return"
+        "2. Return"
     ]
 
     while True:
@@ -29,27 +27,16 @@ def games_menu():
         _print_colored_box(options, c.CYAN, title="Mini Games", padding=2, align='left')
         choice = _choices().strip().lower()
 
-        if choice in {'4', 'q'}:
+        if choice in {'2', 'q'}:
             clear()
             return
 
         match choice:
             case '1':
                 verse_fill_game()
-            case '2':
-                show_placeholder_game("Who Said It?")
-            case '3':
-                show_placeholder_game("Story Sequence")
             case _:
                 _print_colored_box(["Invalid Input"], c.RED, title="Error", padding=2)
                 input("Press Enter to continue...").strip()
-
-# Friendly message used for modes that are not built games yet
-def show_placeholder_game(game_name):
-    clear()
-    lines = [f"{game_name} is coming soon!", "Check back after the next update."]
-    _print_colored_box(lines, c.MAGENTA, title="Work in Progress", padding=2, align='center')
-    input("Press Enter to return to the Games menu...").strip()
 
 # Run the Verse Fill-in game loop until user exits or runs out of prompts
 def verse_fill_game():
