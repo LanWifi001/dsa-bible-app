@@ -176,7 +176,7 @@ def view_results(user_search, matches, results):
         for i in matches:
             verse = i.split('+')
             highlight = ascii_box([verse[0], verse[1]], padding=2, align='center')
-            box_color = highlight.replace(user_search, f'{c.BG_BRIGHT_YELLOW}{user_search}{c.RESET}') 
+            box_color = highlight.replace(user_search, f'{c.BG_YELLOW}{c.BLACK}{user_search}{c.RESET}') 
             print(box_color)
             t.sleep(0.05)
             print()

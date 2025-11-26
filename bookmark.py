@@ -412,4 +412,3 @@ def start_bm():
                 return
             case _:
                 print('Invalid Input.')
-
